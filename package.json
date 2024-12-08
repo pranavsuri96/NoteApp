@@ -1,0 +1,25 @@
+{
+  "name": "noteapp",
+  "version": "1.0.0",
+  "description": "A simple note-taking application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Build script not defined\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pranavsuri96/NoteApp.git"
+  },
+  "author": "pranavsuri96",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pranavsuri96/NoteApp/issues"
+  },
+  "homepage": "https://github.com/pranavsuri96/NoteApp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {}
+}
