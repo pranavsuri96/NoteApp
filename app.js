@@ -28,23 +28,27 @@ const saveNote = async () => {
   let noteId = getNoteIdFromUrl();
   if (!noteId) {
     noteId = Math.random().toString(36).substr(2, 9); // Generate random note ID
-    setNoteIdInUrl(noteId);
+    setNoteIdInUrl(noteId); // Update the URL with the new note ID
   }
 
   try {
     await client.connect();
     const database = client.db('collaborative-notes');
     const notesCollection = database.collection('notes');
+
+    // Save or update the note in the database
     await notesCollection.updateOne(
-      { noteId },
-      { $set: { content: noteContent } },
-      { upsert: true }
+      { noteId }, // Filter by noteId
+      { $set: { content: noteContent } }, // Update content
+      { upsert: true } // Insert if not found
     );
 
     // Generate and display the shareable link
     const shareLink = `${window.location.origin}?note=${noteId}`;
     document.getElementById('share-link').value = shareLink;
-    document.getElementById('note-link').classList.remove('hidden'); // Show the link section
+
+    // Ensure the share link section is visible
+    document.getElementById('note-link').classList.remove('hidden');
 
     alert('Note saved successfully!');
   } catch (err) {
@@ -63,12 +67,18 @@ const loadNote = async () => {
       await client.connect();
       const database = client.db('collaborative-notes');
       const notesCollection = database.collection('notes');
+
+      // Retrieve the note by noteId
       const note = await notesCollection.findOne({ noteId });
 
       if (note) {
         document.getElementById('note-content').value = note.content;
+
+        // Generate and display the shareable link
         const shareLink = `${window.location.origin}?note=${noteId}`;
         document.getElementById('share-link').value = shareLink;
+
+        // Ensure the share link section is visible
         document.getElementById('note-link').classList.remove('hidden');
       } else {
         alert('Note not found!');
@@ -99,4 +109,3 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   // Load note on page load
   window.onload = loadNote;
 }
-
