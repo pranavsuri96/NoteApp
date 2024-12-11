@@ -76,16 +76,19 @@ const loadNote = async () => {
   }
 };
 
-// Event listeners
-document.getElementById('save-note').addEventListener('click', saveNote);
+// Check if running in a browser environment
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  // Event listeners
+  document.getElementById('save-note').addEventListener('click', saveNote);
 
-// Load note on page load
-window.onload = loadNote;
+  // Load note on page load
+  window.onload = loadNote;
 
-// Add event listener for "Copy Link" button
-document.getElementById('copy-link').addEventListener('click', () => {
-  const shareLink = document.getElementById('share-link').value;
-  navigator.clipboard.writeText(shareLink)
-    .then(() => alert('Link copied to clipboard!'))
-    .catch(err => alert('Failed to copy link: ' + err));
-});
+  // Add event listener for "Copy Link" button
+  document.getElementById('copy-link').addEventListener('click', () => {
+    const shareLink = document.getElementById('share-link').value;
+    navigator.clipboard.writeText(shareLink)
+      .then(() => alert('Link copied to clipboard!'))
+      .catch(err => alert('Failed to copy link: ' + err));
+  });
+}
