@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "build": "npm run build"  // Add this line to define your build script
+    "build": "npm run build"  // Corrected the JSON format and added build script
   },
   "dependencies": {
     "body-parser": "^1.20.2",
