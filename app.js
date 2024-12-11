@@ -81,3 +81,11 @@ document.getElementById('save-note').addEventListener('click', saveNote);
 
 // Load note on page load
 window.onload = loadNote;
+
+// Add event listener for "Copy Link" button
+document.getElementById('copy-link').addEventListener('click', () => {
+  const shareLink = document.getElementById('share-link').value;
+  navigator.clipboard.writeText(shareLink)
+    .then(() => alert('Link copied to clipboard!'))
+    .catch(err => alert('Failed to copy link: ' + err));
+});
