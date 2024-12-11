@@ -1,27 +1,15 @@
 if (typeof document !== 'undefined') {
-  const generateNoteId = () => {
+  const getNoteIdFromUrl = () => {
     const urlParams = new URLSearchParams(window.location.search);
-    let noteId = urlParams.get('note');
-
-    if (!noteId) {
-      // Generate a new unique ID if one doesn't exist
-      noteId = Math.random().toString(36).substr(2, 9);
-      const newUrl = `${window.location.origin}?note=${noteId}`;
-      window.history.pushState(null, '', newUrl);
-    }
-
-    return noteId;
+    return urlParams.get('note');
   };
 
-  const loadNote = (noteId) => {
-    const noteContent = localStorage.getItem(noteId);
-
-    if (noteContent) {
-      document.getElementById('note-content').value = noteContent;
-    }
+  const setNoteIdInUrl = (noteId) => {
+    const newUrl = `${window.location.origin}?note=${noteId}`;
+    window.history.pushState(null, '', newUrl);
   };
 
-  document.getElementById('save-note').addEventListener('click', () => {
+  const saveNote = () => {
     const noteContent = document.getElementById('note-content').value;
 
     if (!noteContent.trim()) {
@@ -29,24 +17,36 @@ if (typeof document !== 'undefined') {
       return;
     }
 
-    const noteId = generateNoteId();
+    let noteId = getNoteIdFromUrl();
+    if (!noteId) {
+      // Generate a new unique ID if the link does not exist
+      noteId = Math.random().toString(36).substr(2, 9);
+      setNoteIdInUrl(noteId);
+    }
+
+    // Save or update the note in localStorage
     localStorage.setItem(noteId, noteContent);
 
-    // Generate a shareable link
+    // Update the shareable link
     const shareLink = `${window.location.origin}?note=${noteId}`;
     document.getElementById('share-link').value = shareLink;
 
     // Show the share link
     document.getElementById('note-link').classList.remove('hidden');
     alert('Note saved successfully!');
-  });
+  };
 
-  document.getElementById('delete-note').addEventListener('click', () => {
-    const noteId = generateNoteId();
-    const noteContent = document.getElementById('note-content').value;
+  const deleteNote = () => {
+    const noteId = getNoteIdFromUrl();
 
-    if (!noteContent.trim()) {
+    if (!noteId) {
       alert('No note to delete!');
+      return;
+    }
+
+    const noteContent = localStorage.getItem(noteId);
+    if (!noteContent) {
+      alert('No note content found to delete!');
       return;
     }
 
@@ -54,11 +54,26 @@ if (typeof document !== 'undefined') {
     localStorage.removeItem(noteId);
     document.getElementById('note-content').value = '';
     alert('Note deleted successfully!');
-  });
+  };
+
+  const loadNote = () => {
+    const noteId = getNoteIdFromUrl();
+    if (noteId) {
+      const noteContent = localStorage.getItem(noteId);
+      if (noteContent) {
+        document.getElementById('note-content').value = noteContent;
+        document.getElementById('note-link').classList.remove('hidden');
+        document.getElementById('share-link').value = `${window.location.origin}?note=${noteId}`;
+      } else {
+        alert('Note not found!');
+      }
+    }
+  };
+
+  // Event listeners
+  document.getElementById('save-note').addEventListener('click', saveNote);
+  document.getElementById('delete-note').addEventListener('click', deleteNote);
 
   // Load note on page load
-  window.onload = () => {
-    const noteId = generateNoteId();
-    loadNote(noteId);
-  };
+  window.onload = loadNote;
 }
