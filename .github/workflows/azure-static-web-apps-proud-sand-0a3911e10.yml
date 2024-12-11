@@ -23,11 +23,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-      - name: Install dependencies and build app
+      - name: Install dependencies
+        run: npm install
+      - name: Run build with debug info
         run: |
-          npm install
           npm run build
           echo "Build exit code: $?"
+      - name: Check logs for errors
+        run: cat /github/home/.npm/_logs/2024-12-11T09_25_28_323Z-debug-0.log
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -35,7 +38,7 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_PROUD_SAND_0A3911E10 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for GitHub integrations (e.g., PR comments)
           action: "upload"
-          app_location: "." # Adjust this to the path in your repo, e.g., /NoteApp or /index.html
+          app_location: "/" # Adjust this to the path in your repo, e.g., /NoteApp or /index.html
           api_location: "" # Optional: API source code path
           output_location: "." # Built app content directory
           app_build_command: npm run build # Ensure this matches your script name from your package.json
