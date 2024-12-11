@@ -36,26 +36,6 @@ if (typeof document !== 'undefined') {
     alert('Note saved successfully!');
   };
 
-  const deleteNote = () => {
-    const noteId = getNoteIdFromUrl();
-
-    if (!noteId) {
-      alert('No note to delete!');
-      return;
-    }
-
-    const noteContent = localStorage.getItem(noteId);
-    if (!noteContent) {
-      alert('No note content found to delete!');
-      return;
-    }
-
-    // Remove the note from localStorage
-    localStorage.removeItem(noteId);
-    document.getElementById('note-content').value = '';
-    alert('Note deleted successfully!');
-  };
-
   const loadNote = () => {
     const noteId = getNoteIdFromUrl();
     if (noteId) {
@@ -72,9 +52,7 @@ if (typeof document !== 'undefined') {
 
   // Event listeners
   document.getElementById('save-note').addEventListener('click', saveNote);
-  document.getElementById('delete-note').addEventListener('click', deleteNote);
 
   // Load note on page load
   window.onload = loadNote;
 }
-
