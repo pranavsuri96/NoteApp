@@ -1,18 +1,22 @@
 const { MongoClient } = require('mongodb');
 
-const uri = 'mongodb+srv://pranavsuri96:<password>@memoapp.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000';  // Replace with your Cosmos DB URI
+// Cosmos DB connection URI
+const uri = 'mongodb+srv://pranavsuri96:<password>@memoapp.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000'; 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Utility to extract note ID from URL
 const getNoteIdFromUrl = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('note');
 };
 
+// Utility to set the note ID in the URL
 const setNoteIdInUrl = (noteId) => {
   const newUrl = `${window.location.origin}?note=${noteId}`;
   window.history.pushState(null, '', newUrl);
 };
 
+// Save Note functionality
 const saveNote = async () => {
   const noteContent = document.getElementById('note-content').value;
 
@@ -23,7 +27,7 @@ const saveNote = async () => {
 
   let noteId = getNoteIdFromUrl();
   if (!noteId) {
-    noteId = Math.random().toString(36).substr(2, 9); // Generate a new unique ID
+    noteId = Math.random().toString(36).substr(2, 9); // Generate random note ID
     setNoteIdInUrl(noteId);
   }
 
@@ -37,12 +41,11 @@ const saveNote = async () => {
       { upsert: true }
     );
 
-    // Update the shareable link
+    // Generate and display the shareable link
     const shareLink = `${window.location.origin}?note=${noteId}`;
     document.getElementById('share-link').value = shareLink;
+    document.getElementById('note-link').classList.remove('hidden'); // Show the link section
 
-    // Show the share link
-    document.getElementById('note-link').classList.remove('hidden');
     alert('Note saved successfully!');
   } catch (err) {
     console.error('Error saving note:', err);
@@ -52,6 +55,7 @@ const saveNote = async () => {
   }
 };
 
+// Load Note functionality
 const loadNote = async () => {
   const noteId = getNoteIdFromUrl();
   if (noteId) {
@@ -60,10 +64,12 @@ const loadNote = async () => {
       const database = client.db('collaborative-notes');
       const notesCollection = database.collection('notes');
       const note = await notesCollection.findOne({ noteId });
+
       if (note) {
         document.getElementById('note-content').value = note.content;
+        const shareLink = `${window.location.origin}?note=${noteId}`;
+        document.getElementById('share-link').value = shareLink;
         document.getElementById('note-link').classList.remove('hidden');
-        document.getElementById('share-link').value = `${window.location.origin}?note=${noteId}`;
       } else {
         alert('Note not found!');
       }
@@ -76,20 +82,20 @@ const loadNote = async () => {
   }
 };
 
-// Check if running in a browser environment
+// Copy Link functionality
+const copyLink = () => {
+  const shareLink = document.getElementById('share-link').value;
+  navigator.clipboard.writeText(shareLink)
+    .then(() => alert('Link copied to clipboard!'))
+    .catch(err => alert('Failed to copy link: ' + err));
+};
+
+// Browser environment setup
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   // Event listeners
   document.getElementById('save-note').addEventListener('click', saveNote);
+  document.getElementById('copy-link').addEventListener('click', copyLink);
 
   // Load note on page load
   window.onload = loadNote;
-
-  // Add event listener for "Copy Link" button
-  document.getElementById('copy-link').addEventListener('click', () => {
-    const shareLink = document.getElementById('share-link').value;
-    navigator.clipboard.writeText(shareLink)
-      .then(() => alert('Link copied to clipboard!'))
-      .catch(err => alert('Failed to copy link: ' + err));
-  });
 }
-

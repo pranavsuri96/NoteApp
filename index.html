@@ -4,23 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Collaborative Notes</title>
+  <link rel="stylesheet" href="style.css"> <!-- Link to the external stylesheet -->
   <style>
-    /* Basic styling for your app */
+    /* Inline styles for hidden elements */
     .hidden {
       display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Collaborative Notes</h1>
-  <textarea id="note-content" placeholder="Write your note here..."></textarea>
-  <button id="save-note">Save Note</button>
-  <div id="note-link" class="hidden">
-    <input id="share-link" type="text" readonly>
-    <button id="copy-link">Copy Link</button>
-  </div>
-
-  <script src="app.js"></script>
+  <header>
+    <h1>Collaborative Notes</h1>
+  </header>
+  <main>
+    <!-- Note creation section -->
+    <section id="note-creation">
+      <textarea id="note-content" placeholder="Write your note here..."></textarea>
+      <button id="save-note">Save Note</button>
+    </section>
+    <!-- Shareable link section -->
+    <section id="note-link" class="hidden">
+      <input id="share-link" type="text" readonly>
+      <button id="copy-link">Copy Link</button>
+    </section>
+  </main>
+  <footer>
+    <p>Collaborative Notes App © 2024</p>
+  </footer>
+  <script src="app.js"></script> <!-- Link to the JavaScript file -->
 </body>
 </html>
-
