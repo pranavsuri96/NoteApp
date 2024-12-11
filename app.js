@@ -99,3 +99,4 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   // Load note on page load
   window.onload = loadNote;
 }
+

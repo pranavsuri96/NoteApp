@@ -4,13 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Collaborative Notes</title>
-  <link rel="stylesheet" href="style.css"> <!-- Link to the external stylesheet -->
-  <style>
-    /* Inline styles for hidden elements */
-    .hidden {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
@@ -22,8 +16,9 @@
       <textarea id="note-content" placeholder="Write your note here..."></textarea>
       <button id="save-note">Save Note</button>
     </section>
-    <!-- Shareable link section -->
+    <!-- Link display section -->
     <section id="note-link" class="hidden">
+      <p>Share this link to collaborate:</p>
       <input id="share-link" type="text" readonly>
       <button id="copy-link">Copy Link</button>
     </section>
@@ -31,6 +26,6 @@
   <footer>
     <p>Collaborative Notes App © 2024</p>
   </footer>
-  <script src="app.js"></script> <!-- Link to the JavaScript file -->
+  <script src="app.js"></script>
 </body>
 </html>
