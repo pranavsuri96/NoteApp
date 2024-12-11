@@ -23,7 +23,7 @@ const saveNote = async () => {
 
   let noteId = getNoteIdFromUrl();
   if (!noteId) {
-    noteId = Math.random().toString(36).substr(2, 9);
+    noteId = Math.random().toString(36).substr(2, 9); // Generate a new unique ID
     setNoteIdInUrl(noteId);
   }
 
