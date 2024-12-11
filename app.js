@@ -92,3 +92,4 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       .catch(err => alert('Failed to copy link: ' + err));
   });
 }
+
