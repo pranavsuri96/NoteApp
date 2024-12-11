@@ -1,31 +1,41 @@
-if (typeof document !== 'undefined') {
-  const getNoteIdFromUrl = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('note');
-  };
+const { MongoClient } = require('mongodb');
 
-  const setNoteIdInUrl = (noteId) => {
-    const newUrl = `${window.location.origin}?note=${noteId}`;
-    window.history.pushState(null, '', newUrl);
-  };
+const uri = '<YOUR_COSMOS_DB_URI>';  // Replace with your Cosmos DB URI
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  const saveNote = () => {
-    const noteContent = document.getElementById('note-content').value;
+const getNoteIdFromUrl = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('note');
+};
 
-    if (!noteContent.trim()) {
-      alert('Please write something in the note!');
-      return;
-    }
+const setNoteIdInUrl = (noteId) => {
+  const newUrl = `${window.location.origin}?note=${noteId}`;
+  window.history.pushState(null, '', newUrl);
+};
 
-    let noteId = getNoteIdFromUrl();
-    if (!noteId) {
-      // Generate a new unique ID if the link does not exist
-      noteId = Math.random().toString(36).substr(2, 9);
-      setNoteIdInUrl(noteId);
-    }
+const saveNote = async () => {
+  const noteContent = document.getElementById('note-content').value;
 
-    // Save or update the note in localStorage
-    localStorage.setItem(noteId, noteContent);
+  if (!noteContent.trim()) {
+    alert('Please write something in the note!');
+    return;
+  }
+
+  let noteId = getNoteIdFromUrl();
+  if (!noteId) {
+    noteId = Math.random().toString(36).substr(2, 9);
+    setNoteIdInUrl(noteId);
+  }
+
+  try {
+    await client.connect();
+    const database = client.db('collaborative-notes');
+    const notesCollection = database.collection('notes');
+    await notesCollection.updateOne(
+      { noteId },
+      { $set: { content: noteContent } },
+      { upsert: true }
+    );
 
     // Update the shareable link
     const shareLink = `${window.location.origin}?note=${noteId}`;
@@ -34,25 +44,40 @@ if (typeof document !== 'undefined') {
     // Show the share link
     document.getElementById('note-link').classList.remove('hidden');
     alert('Note saved successfully!');
-  };
+  } catch (err) {
+    console.error('Error saving note:', err);
+    alert('Error saving note.');
+  } finally {
+    await client.close();
+  }
+};
 
-  const loadNote = () => {
-    const noteId = getNoteIdFromUrl();
-    if (noteId) {
-      const noteContent = localStorage.getItem(noteId);
-      if (noteContent) {
-        document.getElementById('note-content').value = noteContent;
+const loadNote = async () => {
+  const noteId = getNoteIdFromUrl();
+  if (noteId) {
+    try {
+      await client.connect();
+      const database = client.db('collaborative-notes');
+      const notesCollection = database.collection('notes');
+      const note = await notesCollection.findOne({ noteId });
+      if (note) {
+        document.getElementById('note-content').value = note.content;
         document.getElementById('note-link').classList.remove('hidden');
         document.getElementById('share-link').value = `${window.location.origin}?note=${noteId}`;
       } else {
         alert('Note not found!');
       }
+    } catch (err) {
+      console.error('Error loading note:', err);
+      alert('Error loading note.');
+    } finally {
+      await client.close();
     }
-  };
+  }
+};
 
-  // Event listeners
-  document.getElementById('save-note').addEventListener('click', saveNote);
+// Event listeners
+document.getElementById('save-note').addEventListener('click', saveNote);
 
-  // Load note on page load
-  window.onload = loadNote;
-}
+// Load note on page load
+window.onload = loadNote;
