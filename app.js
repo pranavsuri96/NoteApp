@@ -1,50 +1,35 @@
-const http = require('http');
-const url = require('url');
+document.getElementById('save-note').addEventListener('click', () => {
+  const noteContent = document.getElementById('note-content').value;
 
-http.createServer((req, res) => {
-  if (req.method === 'POST' && req.url === '/save-note') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    
-    req.on('end', () => {
-      const noteContent = JSON.parse(body).noteContent;
-
-      if (!noteContent.trim()) {
-        res.writeHead(400, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({message: 'Please write something in the note!'}));
-        return;
-      }
-
-      // Generate a unique ID for the note
-      const noteId = Math.random().toString(36).substr(2, 9);
-      // Store the note in a server-side database or temporary storage (e.g., in-memory object)
-      // In this example, we'll just log it
-      console.log(`Note ID: ${noteId}, Content: ${noteContent}`);
-
-      // Generate a shareable link
-      const shareLink = `http://example.com/note/${noteId}`;
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({shareLink}));
-
-      // In a real scenario, you'd want to return this link to the client
-      // and maybe render it in your HTML page.
-    });
-  } else if (req.method === 'GET' && req.url.startsWith('/note/')) {
-    const noteId = req.url.split('/').pop();
-    // Retrieve the note from the server-side storage
-    // Here we just log it for simplicity
-    console.log(`Requested note ID: ${noteId}`);
-
-    // Assuming note content is retrieved, send it as response
-    const noteContent = "Note content here"; // Replace with actual content
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.end(JSON.stringify({noteContent}));
-  } else {
-    res.writeHead(404, {'Content-Type': 'text/plain'});
-    res.end('Not Found');
+  if (!noteContent.trim()) {
+    alert('Please write something in the note!');
+    return;
   }
-}).listen(3000, () => {
-  console.log('Server running at http://localhost:3000/');
+
+  // Generate a unique ID for the note
+  const noteId = Math.random().toString(36).substr(2, 9);
+  localStorage.setItem(noteId, noteContent);
+
+  // Generate a shareable link
+  const shareLink = `${window.location.origin}?note=${noteId}`;
+  document.getElementById('share-link').value = shareLink;
+
+  // Show the share link
+  document.getElementById('note-link').classList.remove('hidden');
 });
+
+// Check if the page has a note ID in the URL
+window.onload = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const noteId = urlParams.get('note');
+
+  if (noteId) {
+    const noteContent = localStorage.getItem(noteId);
+
+    if (noteContent) {
+      document.getElementById('note-content').value = noteContent;
+    } else {
+      alert('Note not found!');
+    }
+  }
+};
