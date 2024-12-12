@@ -6,9 +6,6 @@ if (typeof document !== 'undefined') {
 // Include Azure Blob Storage SDK via script tag in your HTML: 
 // <script src="https://cdn.jsdelivr.net/npm/@azure/storage-blob@12.15.0/dist/azure-storage-blob.min.js"></script>
 
-const storageAccountUrl = "https://<YOUR_STORAGE_ACCOUNT_NAME>.blob.core.windows.net";
-const sasToken = "<YOUR_SAS_TOKEN>";
-
 // Initialize BlobServiceClient
 const blobServiceClient = new Azure.StorageBlob.BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
 
