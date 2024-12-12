@@ -1,10 +1,10 @@
 if (typeof document !== 'undefined') {
   // Azure Blob Storage configuration
-  const storageAccountUrl = "https://memonote.blob.core.windows.net";
+  const storageAccountUrl = "https://memonote.blob.core.windows.net/";
   const containerName = "notes";
   const sasToken = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-12T13:55:38Z&st=2024-12-12T05:55:38Z&spr=https,http&sig=FrTfeNewJuzN1WtVcQ3qKsFA4H%2BgOdplOkVlsqTtEVk%3D"; // Generate from Azure portal
   
-  const blobServiceClient = new Azure.Storage.Blob.BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
+  const blobServiceClient = new AzureStorageBlob.BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
   const containerClient = blobServiceClient.getContainerClient(containerName);
 
   document.getElementById('save-note').addEventListener('click', async () => {
@@ -15,15 +15,14 @@ if (typeof document !== 'undefined') {
       return;
     }
 
-    // Generate a unique ID for the note
     const noteId = Math.random().toString(36).substr(2, 9);
     const blockBlobClient = containerClient.getBlockBlobClient(noteId);
 
     try {
-      // Upload the note to Azure Blob Storage
+      console.log("Saving note:", noteContent, "with ID:", noteId);
       await blockBlobClient.upload(noteContent, noteContent.length);
-      
-      // Generate a shareable link
+      console.log("Note saved successfully!");
+
       const shareLink = `${window.location.origin}?note=${noteId}`;
       document.getElementById('share-link').value = shareLink;
       document.getElementById('note-link').classList.remove('hidden');
@@ -41,18 +40,18 @@ if (typeof document !== 'undefined') {
       const blockBlobClient = containerClient.getBlockBlobClient(noteId);
 
       try {
-        // Download the note from Azure Blob Storage
+        console.log("Fetching note with ID:", noteId);
         const downloadResponse = await blockBlobClient.download(0);
         const noteContent = await new Response(downloadResponse.readableStreamBody).text();
+        console.log("Note content retrieved:", noteContent);
 
         document.getElementById('note-content').value = noteContent;
 
-        // Generate and show the shareable link
         const shareLink = `${window.location.origin}?note=${noteId}`;
         document.getElementById('share-link').value = shareLink;
         document.getElementById('note-link').classList.remove('hidden');
       } catch (error) {
-        console.error("Error downloading note:", error);
+        console.error("Error fetching note:", error);
         alert("Note not found!");
       }
     }
