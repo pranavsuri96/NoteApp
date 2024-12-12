@@ -27,6 +27,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npm install @azure/storage-blob
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
