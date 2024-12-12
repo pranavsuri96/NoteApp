@@ -1,5 +1,5 @@
 if (typeof document !== 'undefined') {
-  const saveNote = () => {
+  document.getElementById('save-note').addEventListener('click', () => {
     const noteContent = document.getElementById('note-content').value;
 
     if (!noteContent.trim()) {
@@ -17,9 +17,10 @@ if (typeof document !== 'undefined') {
 
     // Show the share link
     document.getElementById('note-link').classList.remove('hidden');
-  };
+  });
 
-  const loadNote = () => {
+  // Check if the page has a note ID in the URL
+  window.onload = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const noteId = urlParams.get('note');
 
@@ -28,27 +29,9 @@ if (typeof document !== 'undefined') {
 
       if (noteContent) {
         document.getElementById('note-content').value = noteContent;
-
-        // Display the share link
-        const shareLink = `${window.location.origin}?note=${noteId}`;
-        document.getElementById('share-link').value = shareLink;
-        document.getElementById('note-link').classList.remove('hidden');
       } else {
         alert('Note not found!');
       }
     }
   };
-
-  const copyLink = () => {
-    const shareLink = document.getElementById('share-link').value;
-    navigator.clipboard
-      .writeText(shareLink)
-      .then(() => alert('Link copied to clipboard!'))
-      .catch((err) => alert('Failed to copy link: ' + err));
-  };
-
-  document.getElementById('save-note').addEventListener('click', saveNote);
-  document.getElementById('copy-link').addEventListener('click', copyLink);
-
-  window.onload = loadNote;
 }

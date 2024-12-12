@@ -10,26 +10,19 @@
   <header>
     <h1>Collaborative Notes</h1>
   </header>
-
   <main>
-    <section id="note-creation">
+    <div id="note-creation">
       <textarea id="note-content" placeholder="Write your note here..."></textarea>
       <button id="save-note">Save Note</button>
-    </section>
-
-    <section id="note-link" class="hidden">
+    </div>
+    <div id="note-link" class="hidden">
       <p>Share this link to collaborate:</p>
-      <div class="link-container">
-        <input id="share-link" type="text" readonly>
-        <button id="copy-link">Copy Link</button>
-      </div>
-    </section>
+      <input type="text" id="share-link" readonly>
+    </div>
   </main>
-
   <footer>
-    <p>Collaborative Notes App &copy; 2024</p>
+    <p>&copy; 2024 Collaborative Notes App</p>
   </footer>
-
   <script src="app.js"></script>
 </body>
 </html>
