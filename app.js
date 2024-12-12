@@ -29,9 +29,22 @@ if (typeof document !== 'undefined') {
 
       if (noteContent) {
         document.getElementById('note-content').value = noteContent;
+
+        // Generate and show the shareable link
+        const shareLink = `${window.location.origin}?note=${noteId}`;
+        document.getElementById('share-link').value = shareLink;
+        document.getElementById('note-link').classList.remove('hidden');
       } else {
         alert('Note not found!');
       }
     }
   };
+
+  document.getElementById('copy-link').addEventListener('click', () => {
+    const shareLink = document.getElementById('share-link').value;
+    navigator.clipboard
+      .writeText(shareLink)
+      .then(() => alert('Link copied to clipboard!'))
+      .catch((err) => alert('Failed to copy link: ' + err));
+  });
 }
