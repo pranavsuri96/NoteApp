@@ -1,4 +1,5 @@
 if (typeof document !== 'undefined') {
+  const { BlobServiceClient } = require("@azure/storage-blob");
   // Azure Blob Storage configuration
   const storageAccountUrl = "https://memonote.blob.core.windows.net";
   const containerName = "notes";
@@ -8,7 +9,7 @@ if (typeof document !== 'undefined') {
 
 // Initialize BlobServiceClient
 //const blobServiceClient = new Azure.StorageBlob.BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
-const blobServiceClient = new BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
+const blobServiceClient = new BlobServiceClient(`https://${account}.blob.core.windows.net${sas}`);
 // Example: List blobs in the container
 async function listBlobs() {
   const containerName = "notes";
