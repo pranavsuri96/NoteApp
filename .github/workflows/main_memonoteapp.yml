@@ -1,4 +1,4 @@
-name: Build and deploy Node.js app to Azure Web App - memonoteapp
+name: Build and deploy Node.js app to Azure Web App - memonote
 
 on:
   push:
@@ -62,6 +62,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'memonoteapp'
+          app-name: 'memonote'
           slot-name: 'Production'
           package: .
