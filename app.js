@@ -91,3 +91,4 @@ document.getElementById('copy-link').addEventListener('click', () => {
     .then(() => alert('Link copied to clipboard!'))
     .catch((err) => alert('Failed to copy link: ' + err));
 });
+}
