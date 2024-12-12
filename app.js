@@ -1,5 +1,5 @@
 if (typeof document !== 'undefined') {
-  import { BlobServiceClient } from '@azure/storage-blob';
+  const { BlobServiceClient } = require('@azure/storage-blob');
 
   const storageAccountUrl = "https://memonote.blob.core.windows.net";
   const sasToken = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-12T13:55:38Z&st=2024-12-12T05:55:38Z";
