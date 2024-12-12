@@ -1,9 +1,8 @@
 if (typeof document !== 'undefined') {
-  // Ensure the SDK script is included in your index.html file
-  // <script src="https://cdn.jsdelivr.net/npm/@azure/storage-blob@12.15.0/dist/azure-storage-blob.min.js"></script>
+  import { BlobServiceClient } from '@azure/storage-blob';
 
   const storageAccountUrl = "https://memonote.blob.core.windows.net";
-  const sasToken = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-12T13:55:38Z&st=2024-12-12T05:55:38Z&spr=https,http&sig=FrTfeNewJuzN1WtVcQ3qKsFA4H%2BgOdplOkVlsqTtEVk%3D";
+  const sasToken = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-12-12T13:55:38Z&st=2024-12-12T05:55:38Z";
 
   // Initialize BlobServiceClient
   const blobServiceClient = new BlobServiceClient(`${storageAccountUrl}?${sasToken}`);
