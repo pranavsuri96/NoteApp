@@ -1,19 +1,22 @@
 const { MongoClient } = require('mongodb');
 
-// Replace <password> with your actual password
+// Cosmos DB connection URI
 const uri = 'mongodb+srv://pranavsuri96:<password>@memoapp.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000';
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Utility to extract note ID from URL
 const getNoteIdFromUrl = () => {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get('note');
 };
 
+// Utility to set the note ID in the URL
 const setNoteIdInUrl = (noteId) => {
   const newUrl = `${window.location.origin}?note=${noteId}`;
   window.history.pushState(null, '', newUrl);
 };
 
+// Save Note functionality
 const saveNote = async () => {
   const noteContent = document.getElementById('note-content').value;
 
@@ -24,8 +27,8 @@ const saveNote = async () => {
 
   let noteId = getNoteIdFromUrl();
   if (!noteId) {
-    noteId = Math.random().toString(36).substr(2, 9);
-    setNoteIdInUrl(noteId);
+    noteId = Math.random().toString(36).substr(2, 9); // Generate random note ID
+    setNoteIdInUrl(noteId); // Update the URL with the new note ID
   }
 
   try {
@@ -33,16 +36,20 @@ const saveNote = async () => {
     const database = client.db('collaborative-notes');
     const notesCollection = database.collection('notes');
 
+    // Save or update the note in the database
     await notesCollection.updateOne(
-      { noteId },
-      { $set: { content: noteContent } },
-      { upsert: true }
+      { noteId }, // Filter by noteId
+      { $set: { content: noteContent } }, // Update content
+      { upsert: true } // Insert if not found
     );
 
+    // Generate and display the shareable link
     const shareLink = `${window.location.origin}?note=${noteId}`;
     document.getElementById('share-link').value = shareLink;
 
-    document.getElementById('note-link').classList.add('show');
+    // Ensure the share link section is visible
+    document.getElementById('note-link').classList.remove('hidden');
+
     alert('Note saved successfully!');
   } catch (err) {
     console.error('Error saving note:', err);
@@ -52,6 +59,7 @@ const saveNote = async () => {
   }
 };
 
+// Load Note functionality
 const loadNote = async () => {
   const noteId = getNoteIdFromUrl();
   if (noteId) {
@@ -60,15 +68,18 @@ const loadNote = async () => {
       const database = client.db('collaborative-notes');
       const notesCollection = database.collection('notes');
 
+      // Retrieve the note by noteId
       const note = await notesCollection.findOne({ noteId });
 
       if (note) {
         document.getElementById('note-content').value = note.content;
 
+        // Generate and display the shareable link
         const shareLink = `${window.location.origin}?note=${noteId}`;
         document.getElementById('share-link').value = shareLink;
 
-        document.getElementById('note-link').classList.add('show');
+        // Ensure the share link section is visible
+        document.getElementById('note-link').classList.remove('hidden');
       } else {
         alert('Note not found!');
       }
@@ -81,17 +92,59 @@ const loadNote = async () => {
   }
 };
 
+// Copy Link functionality
 const copyLink = () => {
   const shareLink = document.getElementById('share-link').value;
-  navigator.clipboard
-    .writeText(shareLink)
+  navigator.clipboard.writeText(shareLink)
     .then(() => alert('Link copied to clipboard!'))
-    .catch((err) => alert('Failed to copy link: ' + err));
+    .catch(err => alert('Failed to copy link: ' + err));
 };
 
-if (typeof document !== 'undefined') {
+// Browser environment setup
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  // Event listeners
   document.getElementById('save-note').addEventListener('click', saveNote);
   document.getElementById('copy-link').addEventListener('click', copyLink);
 
+  // Load note on page load
   window.onload = loadNote;
+}
+
+
+if (typeof document !== 'undefined') {
+  document.getElementById('save-note').addEventListener('click', () => {
+    const noteContent = document.getElementById('note-content').value;
+
+    if (!noteContent.trim()) {
+      alert('Please write something in the note!');
+      return;
+    }
+
+    // Generate a unique ID for the note
+    const noteId = Math.random().toString(36).substr(2, 9);
+    localStorage.setItem(noteId, noteContent);
+
+    // Generate a shareable link
+    const shareLink = `${window.location.origin}?note=${noteId}`;
+    document.getElementById('share-link').value = shareLink;
+
+    // Show the share link
+    document.getElementById('note-link').classList.remove('hidden');
+  });
+
+  // Check if the page has a note ID in the URL
+  window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const noteId = urlParams.get('note');
+
+    if (noteId) {
+      const noteContent = localStorage.getItem(noteId);
+
+      if (noteContent) {
+        document.getElementById('note-content').value = noteContent;
+      } else {
+        alert('Note not found!');
+      }
+    }
+  };
 }
